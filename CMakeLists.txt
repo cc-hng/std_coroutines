@@ -4,6 +4,8 @@ project(std_coroutines)
 
 option(COROUTINES_FIND_EXPERIMENTAL "find <experimental/coroutine>" ON)
 
+set(CMAKE_CXX_STANDARD 20)
+
 include(GNUInstallDirs)
 include(CMakePushCheckState)
 include(CheckIncludeFileCXX)
@@ -20,8 +22,8 @@ elseif("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xGNU")
   set(_CXX_COROUTINES_AWAIT "-fcoroutines -std=c++20")
 elseif("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang"
        OR "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xAppleClang")
-  set(_CXX_COROUTINES_AWAIT "-stdlib=libc++ -std=c++20")
-  # set(_CXX_COROUTINES_AWAIT "${_CXX_COROUTINES_AWAIT} -fcoroutines-ts")
+  # set(_CXX_COROUTINES_AWAIT "-stdlib=libc++") set(_CXX_COROUTINES_AWAIT
+  # "${_CXX_COROUTINES_AWAIT} -fcoroutines-ts")
 else()
   message(FATAL_ERROR "Unknown compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
