@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.13)
 
 project(std_coroutines)
 
 option(COROUTINES_FIND_EXPERIMENTAL "find <experimental/coroutine>" ON)
-
-set(CMAKE_CXX_STANDARD 20)
 
 include(GNUInstallDirs)
 include(CMakePushCheckState)
@@ -19,9 +17,13 @@ if(("x${CMAKE_CXX_COMPILER_ID}" MATCHES "x.*Clang"
    OR "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
   set(_CXX_COROUTINES_AWAIT "/await")
 elseif("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xGNU")
-  set(_CXX_COROUTINES_AWAIT "-fcoroutines")
+  set(_CXX_COROUTINES_AWAIT "-fcoroutines -std=c++20")
+elseif("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang"
+       OR "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xAppleClang")
+  set(_CXX_COROUTINES_AWAIT "-stdlib=libc++ -std=c++20")
+  # set(_CXX_COROUTINES_AWAIT "${_CXX_COROUTINES_AWAIT} -fcoroutines-ts")
 else()
-  set(_CXX_COROUTINES_AWAIT "-fcoroutines-ts")
+  message(FATAL_ERROR "Unknown compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 # Detect which of Experimental and Final we should look for
@@ -80,6 +82,8 @@ if(NOT CXX_COROUTINES_HAVE_COROUTINES)
 endif()
 
 add_library(${PROJECT_NAME} INTERFACE)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
+
 add_library(std::coroutines ALIAS ${PROJECT_NAME})
 
 # We have some coroutines library available. Do link checks
